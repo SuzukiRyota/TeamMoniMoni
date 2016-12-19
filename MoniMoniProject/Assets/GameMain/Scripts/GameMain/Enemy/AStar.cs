@@ -46,8 +46,8 @@ public class AStar : MonoBehaviour
 
         public void calcHeuristicCost(int goal_x_, int goal_y_)
         {
-            var dx = Mathf.Abs(goal_x_ - x);
-            var dy = Mathf.Abs(goal_y_ - y);
+            goal_x_ = Mathf.Abs(goal_x_ - x);
+            goal_y_ = Mathf.Abs(goal_y_ - y);
         }
 
         public bool isNone()

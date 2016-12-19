@@ -61,7 +61,7 @@
 //フラッシュ後は背景を悪夢の外に変化。
 [text]
 
-#ムー＆ヴィーバ#[chara'moo驚'][chara'vi-ba驚']
+#ムー＆ヴィーバ#[chara'moo驚'] [chara'vi-ba驚']
 うわっ!![n]
 
 #ヴィーバ#[chara'vi-ba苦']
@@ -100,7 +100,7 @@
 //白フラッシュ
 
 [text]
-#ムー＆ヴィーバ#[chara'moo驚'][chara'vi-ba驚']
+#ムー＆ヴィーバ#[chara'moo驚'] [chara'vi-ba驚']
 ！！[n]
 
 #ヴィーバ#[chara'vi-ba焦']
@@ -147,7 +147,7 @@
 //白フラッシュ
 
 [text]
-#ムー＆ヴィーバ#[chara'moo驚'][chara'vi-ba驚']
+#ムー＆ヴィーバ#[chara'moo驚'] [chara'vi-ba驚']
 ！[n]
 
 #ヴィーバ#[chara'vi-ba怒']

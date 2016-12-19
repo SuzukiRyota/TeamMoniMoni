@@ -47,10 +47,7 @@ public class MapChipController : MonoBehaviour
         loadMap(select_map_name);
         //loadMap("test");
 
-        // MEMO: string.IndexOf("") --- 含まれている場合0以上含まれていない場合-1
-        //                        大文字小文字の区別はつく
         chipsIsActive();
-
 
         for (int y = 0; y < chip_num_y; y++)
         {
@@ -373,7 +370,6 @@ public class MapChipController : MonoBehaviour
         }
     }
 
-
     bool pointToBottomLeftBox(Vector2 pointpos_, Vector2 boxpos_, Vector2 boxsize_)
     {
         return (
@@ -409,7 +405,9 @@ public class MapChipController : MonoBehaviour
     /// <param name="loadname_"></param>
     public void loadMap(string loadname_)
     {
-        using (StreamReader sr = new StreamReader(Application.dataPath + "/GameMain/Resources/StageData/" + loadname_ + "_StatusData.txt"))
+        var statustext = Resources.Load<TextAsset>("StageData/" + loadname_ + "_StatusData");
+
+        using (var sr = new StringReader(statustext.text))
         {
             string line = sr.ReadLine();
             chip_num_x = stringToInt(line, 0);
@@ -420,7 +418,9 @@ public class MapChipController : MonoBehaviour
         {
             string layername = LayerController.layernumToString(i);
             Sprite[] loadsprite = Resources.LoadAll<Sprite>("Textures/MapChip/" + layername);
-            using (StreamReader sr = new StreamReader(Application.dataPath + "/GameMain/Resources/StageData/" + loadname_ + "_" + layername + "Data.txt"))
+
+            var stagelayertext = Resources.Load<TextAsset>("StageData/" + loadname_ + "_" + layername + "Data");
+            using (var sr = new StringReader(stagelayertext.text))
             {
                 int index = 0;
                 List<List<GameObject>> tempblock_xy = new List<List<GameObject>>();

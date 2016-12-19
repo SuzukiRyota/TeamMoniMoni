@@ -10,7 +10,6 @@ public class NightMareController : MonoBehaviour
     public float speed;
 
     public int movecount;
-    int currentcount;
 
     public Vector2 prev_cell;
     // Use this for initialization
@@ -18,7 +17,6 @@ public class NightMareController : MonoBehaviour
     {
         is_move = false;
         movecount = 0;
-        currentcount = movecount;
         prev_cell = retCell();
     }
 
