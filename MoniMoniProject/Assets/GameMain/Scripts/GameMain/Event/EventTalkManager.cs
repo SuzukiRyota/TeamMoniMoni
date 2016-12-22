@@ -124,7 +124,9 @@ public class EventTalkManager : MonoBehaviour
             is_talknow = true;
             rootButtonSetup();
             current_read_line = 0;
-            using (var sr = new StreamReader(Application.dataPath + "/GameMain/Resources/EventData/" + textname_ + ".txt"))
+
+            var eventtext = Resources.Load<TextAsset>("EventData/" + textname_);
+            using (var sr = new StringReader(eventtext.text))
             {
                 loadtextdata = sr.ReadToEnd();
             }

@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class walk_eat : MonoBehaviour
 {
+    [SerializeField]
+    Image white_image;
+
     private int walk_chenge;
     public bool start_judge;
 
@@ -18,7 +21,7 @@ public class walk_eat : MonoBehaviour
     private Vector3 animation_walk;
     //private Vector3 animation_end_walk;
     private float size;
-    private int animation_time;
+    private float animation_time;
     public Sprite eat_1;
     public Sprite eat_2;
     public Sprite eat_3;
@@ -55,6 +58,7 @@ public class walk_eat : MonoBehaviour
     {
         if (start_judge == true)
         {
+
             animation_time++;
             transform.localScale = new Vector3(size, size, 1);
             transform.localPosition = animation_pos;
@@ -74,11 +78,34 @@ public class walk_eat : MonoBehaviour
             }//0.015
             if (animation_time > 200 && animation_time <= 300)
             {
-                animation_pos -= animation_walk / 200;
+                animation_pos -= animation_walk / 400;
                 size += 0.00005f;
                 //0.005
             }//0.02
-           //x -4.9 y -1.8 size -0.01
+            if (animation_time > 300 && animation_time <= 400)
+            {
+                animation_pos -= animation_walk / 800;
+                size += 0.0002f;
+                //0.005
+            }//0.03
+            if (animation_time > 400 && animation_time <= 500)
+            {
+                animation_pos -= animation_walk / 800;
+                size += 0.0004f;
+                //0.005
+            }//0.05
+            if (animation_time > 500 && animation_time <= 600)
+            {
+                size += 0.0003f;
+                var color = white_image.color;
+                color.a = 0.0f + (animation_time - 500) / 100;
+                color.r = 0.0f + (animation_time - 500) / 100;
+                color.g = 0.0f + (animation_time - 500) / 100;
+                //color.b = 0.0f + (animation_time - 500) / 100;
+                white_image.color = color;
+                //0.008
+            }//0.04
+             //x -4.9 y -1.8 size -0.01
             if (animation_time % 10 == 0)
             {
                 switch (walk_chenge)
@@ -102,7 +129,7 @@ public class walk_eat : MonoBehaviour
             }
             if (animation_time == 190)image_eat.sprite = eat_3;
             if (animation_time == 200)image_eat.sprite = eat_4;
-            if (animation_time == 301)
+            if (animation_time == 601)
             {
                 slider_ani.SlideStart();
                 Destroy(gameObject);

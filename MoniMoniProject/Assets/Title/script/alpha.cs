@@ -5,10 +5,10 @@ using System.Collections;
 
 public class alpha : MonoBehaviour {
     [SerializeField]
-    private float cahngeAlpha;
+    private float changeAlpha;
     float changeRed = 1.0f;
     float changeGreen = 1.0f;
-    float cahngeBlue = 1.0f;
+    float changeBlue = 1.0f;
 
 
     // Use this for initialization
@@ -18,7 +18,7 @@ public class alpha : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        this.GetComponent<SpriteRenderer>().color = new Color(changeRed, changeGreen, cahngeBlue, cahngeAlpha);
+        this.GetComponent<SpriteRenderer>().color = new Color(changeRed, changeGreen, changeBlue, changeAlpha);
 
     }
 }

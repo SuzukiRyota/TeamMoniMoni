@@ -4,6 +4,12 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class Slide : MonoBehaviour
 {
+    [SerializeField]
+    float size_y_use;
+    [SerializeField]
+    private bool size_y_chenger;
+
+
     float end_time;
     [SerializeField]
     Image white_image;
@@ -59,8 +65,12 @@ public class Slide : MonoBehaviour
     private GameObject eat_effect;
     float effect_rotate;
     float eat_effect_alpha;
+
+    bool start_anime;
+    float start_time;
     void Start()
     {
+        if (size_y_use == null) size_y_use = 0;
         end_time = 0.0f;
         mogu_sound = GetComponent<AudioSource>();
         touch_sound = BGMer.GetComponent<AudioSource>();
@@ -90,6 +100,9 @@ public class Slide : MonoBehaviour
         eat_effect = transform.Find("eat_effect").gameObject;
         effect_rotate = 0.0f;
         eat_effect_alpha = 0.0f;
+
+        start_anime = false;
+        start_time = 0;
     }
 
     // Update is called once per frame
@@ -99,8 +112,23 @@ public class Slide : MonoBehaviour
     {
         if (starter == false)
         {
-            transform.localPosition = new Vector3(200, 0, 0);
+            if(start_anime==false)transform.localPosition = new Vector3(200, 0, 0);
+            if (start_anime == true)
+            {
+                start_time++;
+                if (start_time < 100)
+                {
+                    var color = white_image.color;
+                    color.a = 1.0f - start_time / 100;
+                    color.r = 1.0f - start_time / 100;
+                    color.g = 1.0f - start_time / 100;
+                    //color.b = 1.0f - start_time / 100;
+                    white_image.color = color;
+                    
+                }
+                if (start_time == 100) starter = true;
 
+            }
         }
         if (starter == true)
         {
@@ -120,9 +148,11 @@ public class Slide : MonoBehaviour
                 //{
                 //    print(mousePosition);
                 //}
-                if (mousePosition.y > 190.0f && mousePosition.y < 313.0f) eating_1 = true;
-                else if (mousePosition.y > -5.0f && mousePosition.y < 120.0f) eating_2 = true;
-                else if (mousePosition.y >= 120.0f && mousePosition.y <= 190.0f) eating_yet = true;
+
+                //スマホの解像度は375*667らしい
+                if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f) eating_1 = true;
+                else if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/4) eating_2 = true;
+                else if (mousePosition.y >= size_y_use/3 && mousePosition.y <= size_y_use) eating_yet = true;
                 else
                 {
                     print(mousePosition);
@@ -153,18 +183,19 @@ public class Slide : MonoBehaviour
                 call_mogu++;
                 if (eating_1 == true)
                 {
-                    if (mousePosition.y > 190.0f && mousePosition.y < 313.0f)
+                    if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f)
                     {
                         eat_count = 0;
                         if (turning == true)
                         {
+                            call_mogu = 0;
                             chew_halo = true;
                             chew_count++;
                             turning = false;
                             eat_effect_alpha = 0.5f;
                         }
                     }
-                    if (mousePosition.y > 120.0f && mousePosition.y < 190.0f)
+                    if (mousePosition.y > size_y_use/3 && mousePosition.y < size_y_use/3*2)
                     {
                         eat_count = 1;
                         if (turning == true)
@@ -172,27 +203,33 @@ public class Slide : MonoBehaviour
                             eat_count = 3;
                         }
                     }
-                    if (mousePosition.y > 50.0f && mousePosition.y < 120.0f)
+                    if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/3)
                     {
                         eat_count = 2;
-                        turning = true;
+                        if (turning == false)
+                        {
+                            call_mogu = 0;
+                            turning = true;
+                        }
                     }
 
                 }
                 if (eating_2 == true)
                 {
-                    if (mousePosition.y > 50.0f && mousePosition.y < 120.0f)
+                    if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/3)
                     {
                         eat_count = 0;
+
                         if (turning == true)
                         {
+                            call_mogu = 0;
                             chew_halo = true;
                             chew_count++;
                             turning = false;
                             eat_effect_alpha = 0.5f;
                         }
                     }
-                    if (mousePosition.y > 120.0f && mousePosition.y < 190.0f)
+                    if (mousePosition.y > size_y_use/3 && mousePosition.y < size_y_use/3*2)
                     {
                         eat_count = 1;
                         if (turning == true)
@@ -200,22 +237,26 @@ public class Slide : MonoBehaviour
                             eat_count = 3;
                         }
                     }
-                    if (mousePosition.y > 190.0f && mousePosition.y < 313.0f)
+                    if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f)
                     {
                         eat_count = 2;
-                        turning = true;
+                        if (turning == false)
+                        {
+                            call_mogu = 0;
+                            turning = true;
+                        }
 
                     }
                 }
 
                 if (eating_yet == true)
                 {
-                    if (mousePosition.y > 190.0f && mousePosition.y < 313.0f)
+                    if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f)
                     {
                         eating_1 = true;
                         eating_yet = false;
                     }
-                    else if (mousePosition.y > -5.0f && mousePosition.y < 120.0f)
+                    else if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/3)
                     {
                         eating_2 = true;
                         eating_yet = false;
@@ -244,23 +285,18 @@ public class Slide : MonoBehaviour
                 switch (eat_count)
                 {
                     case 0:
-                        if (eating_yet == true)
-                        {
-                            image_eat.sprite = eat_2;
-                        }
+                        if (turning == true) call_mogu = 0;
+                        if (eating_yet == true)image_eat.sprite = eat_2;
                         else
-                            image_eat.sprite = eat_1;
+                        image_eat.sprite = eat_1;
                         break;
                     case 1:
-                        call_mogu = 0;
                         image_eat.sprite = eat_1;
                         break;
                     case 2:
-                       
                         image_eat.sprite = eat_2;
                         break;
                     case 3:
-                        call_mogu = 0;
                         image_eat.sprite = eat_2;
                         break;
                 }
@@ -278,11 +314,11 @@ public class Slide : MonoBehaviour
                         call_mogu_pos = 2;
                         break;
                     case 2:
-                        Instantiate(mogu, new Vector3(0 + Random.Range(-1.5f, 1.5f), -1.2f + Random.Range(-0.5f, 0.5f), 0), Quaternion.Euler(Vector3.zero));
+                        Instantiate(mogu, new Vector3(0 + Random.Range(-1.5f, 1.5f), -1.5f + Random.Range(-0.5f, 0.5f), 0), Quaternion.Euler(Vector3.zero));
                         call_mogu_pos = 3;
                         break;
                     case 3:
-                        Instantiate(mogu, new Vector3(-2.2f + Random.Range(-0.5f, 0.2f), 0 + Random.Range(-1.5f, 1.5f), 0), Quaternion.Euler(Vector3.zero));
+                        Instantiate(mogu, new Vector3(-2.4f + Random.Range(-0.5f, 0.2f), 0 + Random.Range(-1.5f, 1.5f), 0), Quaternion.Euler(Vector3.zero));
                         call_mogu_pos = 0;
                         break;
 
@@ -378,7 +414,7 @@ public class Slide : MonoBehaviour
     }
     public void SlideStart()
     {
-        starter = true;
+        start_anime = true;
         transform.localPosition = pos;
         text_slide.text = "し縦てに食スべラてイねド";
     }

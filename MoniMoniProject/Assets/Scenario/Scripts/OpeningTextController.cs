@@ -112,8 +112,10 @@ public class OpeningTextController : MonoBehaviour
     {
         loadtextpath = "Opening";
 
-        using (var sr = new StreamReader(Application.dataPath +
-            "/Scenario/Resources/TextData/" + loadtextpath + ".txt"))
+        var textdata = Resources.Load<TextAsset>("TextData/" + loadtextpath);
+
+
+        using (var sr = new StringReader(textdata.text))
         {
             loadtextdata = sr.ReadToEnd();
         }

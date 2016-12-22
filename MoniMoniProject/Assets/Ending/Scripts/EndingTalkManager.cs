@@ -215,7 +215,7 @@ public class EndingTalkManager : MonoBehaviour
                         current_read_line = i;
                         return;
                     case "end":
-                        SceneManager.LoadScene("Title");
+                        SceneManager.LoadScene("Scenario");
                         return;
                 }
 
@@ -476,8 +476,9 @@ public class EndingTalkManager : MonoBehaviour
         sprites = Resources.LoadAll<Sprite>("Textures/Talk");
         audiosource = GetComponent<AudioSource>();
         loadtextpath = "Ending";
-        using (var sr = new StreamReader(Application.dataPath +
-            "/Ending/Resources/" + loadtextpath + ".txt"))
+        var endingtext = Resources.Load<TextAsset>(loadtextpath);
+
+        using (var sr = new StringReader(endingtext.text))
         {
             loadtextdata = sr.ReadToEnd();
         }

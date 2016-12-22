@@ -2,9 +2,10 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class enemy_move : MonoBehaviour {
+public class enemy_move : MonoBehaviour
+{
     public float start_time;
-    
+
     [SerializeField]
     Image white_image;
 
@@ -17,6 +18,7 @@ public class enemy_move : MonoBehaviour {
     [SerializeField]
     private GameObject enemy_HP_text_slot;
     Text HP_text_slot;
+    
 
     [SerializeField]
     private GameObject BGMer;
@@ -28,15 +30,16 @@ public class enemy_move : MonoBehaviour {
     public bool enemy_eat;
     private Vector3 enemy_pos;
     private Vector3 enemy_end_pos;
-    private Vector3 animation_eat_end_pos = new Vector3(2.5f, 0.5f, -6);
+    private Vector3 animation_eat_end_pos = new Vector3(3.0f, 0.5f, -6);
     private float size;
     float speed;
     float speed_regulation;
-    
+
     [SerializeField]
     private Collider2D _collider2D = null;
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         start_time = 0.0f;
 
         touch_sound = BGMer.GetComponent<AudioSource>();
@@ -51,13 +54,15 @@ public class enemy_move : MonoBehaviour {
         enemy_pos = Vector3.zero;
         enemy_end_pos = Vector3.zero;
         speed = 0;
-        speed_regulation = 0;
+        speed_regulation = 3;
         touch_sound.Play();
         touch_sound.loop = true;
+        
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         start_time++;
         if (start_time < 100)
         {
@@ -70,58 +75,34 @@ public class enemy_move : MonoBehaviour {
         if (start_time >= 100)
         {
             transform.localScale = new Vector3(size, size, 1);
-            
+
             time++;
             switch (touch_count)
             {
                 case 0:
                     transform.localPosition = enemy_pos;
                     HP_text.text = "3";
-                    if (time < 150)
-                    {
-                        speed_regulation = 3;
-                    }
-                    if (time >= 150)
-                    {
-                        if (speed_regulation >= 1.0f)
-                        {
-                            speed_regulation -= 0.01f;
-                        }
-
-                    }
+                    if (time < 150&&speed_regulation < 3.0f) speed_regulation += 0.04f;
+                    if (time >= 150&&speed_regulation >= 1.0f)speed_regulation -= 0.04f;
                     speed += 0.05f * speed_regulation;
                     enemy_pos = new Vector3(Mathf.Sin(-speed) * 2.0f, Mathf.Cos(-speed) * 1.5f, 0);
                     break;
                 case 1:
                     transform.localPosition = enemy_pos;
                     HP_text.text = "2";
-                    if (time < 150)
-                    {
-                        speed_regulation = 5;
-                    }
-                    if (time >= 150)
-                    {
-                        if (speed_regulation >= 1.0f)
-                        {
-                            speed_regulation -= 0.01f;
-                        }
-                    }
+                    if (time < 150 && speed_regulation < 5.0f) speed_regulation += 0.04f;
+                    if (time >= 150&&speed_regulation >= 1.0f)speed_regulation -= 0.04f;                    
                     speed += 0.03f * speed_regulation;
                     enemy_pos = new Vector3(Mathf.Sin(-speed / 4) * 2, Mathf.Cos(-speed) * 1.8f, 0);
                     break;
                 case 2:
                     transform.localPosition = enemy_pos;
                     HP_text.text = "1";
-                    if (time < 200)
-                    {
-                        warp_time += 6;
-                    }
-                    if (time >= 200)
-                    {
-                        warp_time += 1;
-                    }
-                    speed += 0.03f * speed_regulation;
-                    if (warp_time == 60)
+                    if (time < 200)warp_time += 6;
+                    if (time >= 200&&time<500)warp_time++;
+                    if (time >= 500 && time % 2 == 0) warp_time++;
+                     speed += 0.03f * speed_regulation;
+                    if (warp_time >= 40)
                     {
                         enemy_pos = new Vector3(Random.Range(-2.5f, 2.5f), Random.Range(-2.2f, 2.2f), 0);
                         warp_time = 0;
@@ -159,17 +140,29 @@ public class enemy_move : MonoBehaviour {
 
                 if (collider == _collider2D)
                 {
-                    if (time > 200 && touch_count <= 2)
+                    if (time > 200)
                     {
-                        if (touch_count == 2)
+                        switch (touch_count)
                         {
-                            enemy_end_pos = transform.localPosition;
-                            enemy_eat = true;
-                           // touch_sound.Stop();
+                            case 0:
+                                touch_count++;
+                                time = 0;
+                                speed_regulation = 5;
+                                break;
+                            case 1:
+                                touch_count++;
+                                time = 0;
+                                break;
+                            case 2:
+                                enemy_end_pos = transform.localPosition;
+                                enemy_eat = true;
+                                touch_count++;
+                                time = 0;
+                                break;
                         }
-                        touch_count++;
-                        time = 0;
+                       
                     }
+
                     //Debug.Log(cout);
                 }
             }

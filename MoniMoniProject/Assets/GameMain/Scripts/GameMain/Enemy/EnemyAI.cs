@@ -514,11 +514,13 @@ public class EnemyAI : MonoBehaviour
         rootmax = 0;
         while (true)
         {
-            string readfile = Application.dataPath + "/GameMain/Resources/StageData/"
+            var readtext = Resources.Load<TextAsset>("StageData/"
                + mapchip.select_map_name
                + "_Enemy" + enemynumber
-               + "Root" + rootmax + "Data.txt";
-            if (!File.Exists(readfile))
+               + "Root" + rootmax + "Data");
+
+
+            if (readtext == null)
                 break;
 
             int[][] loadrootnums = new int[chip_y][];
@@ -527,8 +529,8 @@ public class EnemyAI : MonoBehaviour
                 loadrootnums[y] = new int[chip_x];
             }
 
-            using (StreamReader sr =
-                new StreamReader(readfile))
+            using (var sr =
+                new StringReader(readtext.text))
             {
                 // スタートの番号
                 int usestartnum = int.MaxValue;
