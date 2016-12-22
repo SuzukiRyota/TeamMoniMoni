@@ -98,11 +98,11 @@ public class MapChipController : MonoBehaviour
     }
 
     // プレイヤーが選んでいるブロック
-    private int select_cell_x;
-    private int select_cell_y;
+    public int select_cell_x;
+    public int select_cell_y;
     // プレイヤーのセル
-    private int player_cell_x;
-    private int player_cell_y;
+    public int player_cell_x;
+    public int player_cell_y;
 
 
     /// <summary>
@@ -148,11 +148,11 @@ public class MapChipController : MonoBehaviour
     }
 
     // プレイヤーでイベントが起こった時に選んでいるブロック
-    private int eventselect_cell_x;
-    private int eventselect_cell_y;
+    public int eventselect_cell_x;
+    public int eventselect_cell_y;
     // プレイヤーでイベントが起こった時のセル
-    private int eventplayer_cell_x;
-    private int eventplayer_cell_y;
+    public int eventplayer_cell_x;
+    public int eventplayer_cell_y;
 
     bool is_eventstart;
 

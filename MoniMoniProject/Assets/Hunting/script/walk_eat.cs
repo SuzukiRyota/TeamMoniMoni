@@ -26,11 +26,10 @@ public class walk_eat : MonoBehaviour
     public Sprite eat_2;
     public Sprite eat_3;
     public Sprite eat_4;
-    
     // Use this for initialization
     void Start()
     {
-        walk_chenge = 0;
+       walk_chenge = 0;
         slider_ani = slider.GetComponent<Slide>();
         size = 0.0100001f;
         animation_pos = transform.localPosition;

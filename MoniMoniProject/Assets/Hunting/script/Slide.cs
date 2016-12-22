@@ -6,10 +6,7 @@ public class Slide : MonoBehaviour
 {
     [SerializeField]
     float size_y_use;
-    [SerializeField]
-    private bool size_y_chenger;
-
-
+    
     float end_time;
     [SerializeField]
     Image white_image;
@@ -62,15 +59,14 @@ public class Slide : MonoBehaviour
     public int effect_time;
 
     private bool eat_end;
-    private GameObject eat_effect;
-    float effect_rotate;
-    float eat_effect_alpha;
 
     bool start_anime;
     float start_time;
+    Color color;
     void Start()
     {
-        if (size_y_use == null) size_y_use = 0;
+        color = white_image.color;
+        this.GetComponent<Image>().color = new Color(1, 1, 1, 0);
         end_time = 0.0f;
         mogu_sound = GetComponent<AudioSource>();
         touch_sound = BGMer.GetComponent<AudioSource>();
@@ -83,7 +79,6 @@ public class Slide : MonoBehaviour
         text_eat_end_look = false;
         text_eat_end_move = 0.0f;
         
-        pos = transform.localPosition;
         starter = false;
         eat_end = false;
         mousePosition = Vector3.zero;
@@ -94,13 +89,9 @@ public class Slide : MonoBehaviour
         eat_count = 0;
         chew_count = 0; ;
         image_eat = GetComponent<Image>();
-        effect_time = 0;
         //slide_level = eat_slider.value;
         //eat_count = 0;
-        eat_effect = transform.Find("eat_effect").gameObject;
-        effect_rotate = 0.0f;
-        eat_effect_alpha = 0.0f;
-
+        
         start_anime = false;
         start_time = 0;
     }
@@ -112,13 +103,11 @@ public class Slide : MonoBehaviour
     {
         if (starter == false)
         {
-            if(start_anime==false)transform.localPosition = new Vector3(200, 0, 0);
             if (start_anime == true)
             {
                 start_time++;
                 if (start_time < 100)
                 {
-                    var color = white_image.color;
                     color.a = 1.0f - start_time / 100;
                     color.r = 1.0f - start_time / 100;
                     color.g = 1.0f - start_time / 100;
@@ -133,31 +122,8 @@ public class Slide : MonoBehaviour
         if (starter == true)
         {
 
-            mousePosition = Input.mousePosition;
-            eat_effect.GetComponent<CanvasGroup>().alpha = eat_effect_alpha;
-            eat_effect.transform.localEulerAngles = new Vector3(0, 180, effect_rotate);
-            effect_rotate += 10.0f;
-            if (Input.GetMouseButtonDown(0))
-            {
-                //if (mousePosition.x > -1.0f && mousePosition.x < 495.0f) print("いま左ボタンが押された");
-                //else {
-                //    print(mousePosition);
-                //}
-                //if (mousePosition.y > -1.0f && mousePosition.y < 313.0f) print("いま左ボタンが押された");
-                //else
-                //{
-                //    print(mousePosition);
-                //}
-
-                //スマホの解像度は375*667らしい
-                if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f) eating_1 = true;
-                else if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/4) eating_2 = true;
-                else if (mousePosition.y >= size_y_use/3 && mousePosition.y <= size_y_use) eating_yet = true;
-                else
-                {
-                    print(mousePosition);
-                }
-            }
+            
+            
             if (Input.GetMouseButtonUp(0))
             {
                 eating_1 = false;
@@ -167,19 +133,17 @@ public class Slide : MonoBehaviour
                 eat_count = 0;
                 call_mogu = 5;
             }
-            if (chew_halo == true)
-            {
-                effect_time++;
-                eat_effect_alpha -= 0.05f;
-                if (effect_time == 10)
-                {
-                    effect_time = 0;
-                    eat_effect_alpha = 0;
-                    chew_halo = false;
-                }
-            }
+           
             if (eat_end == false)
             {
+                mousePosition = Input.mousePosition;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (mousePosition.y > size_y_use / 3 * 2 && mousePosition.y < size_y_use + 5.0f) eating_1 = true;
+                    else if (mousePosition.y > -5.0f && mousePosition.y < size_y_use / 3) eating_2 = true;
+                    else if (mousePosition.y >= size_y_use / 3 && mousePosition.y <= size_y_use / 3 * 2) eating_yet = true;
+                    else print(mousePosition);                    
+                }
                 call_mogu++;
                 if (eating_1 == true)
                 {
@@ -189,10 +153,8 @@ public class Slide : MonoBehaviour
                         if (turning == true)
                         {
                             call_mogu = 0;
-                            chew_halo = true;
                             chew_count++;
                             turning = false;
-                            eat_effect_alpha = 0.5f;
                         }
                     }
                     if (mousePosition.y > size_y_use/3 && mousePosition.y < size_y_use/3*2)
@@ -214,38 +176,25 @@ public class Slide : MonoBehaviour
                     }
 
                 }
-                if (eating_2 == true)
-                {
-                    if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/3)
-                    {
+                if (eating_2 == true){
+                    if (mousePosition.y > -5.0f && mousePosition.y < size_y_use/3){
                         eat_count = 0;
-
-                        if (turning == true)
-                        {
+                        if (turning == true){
                             call_mogu = 0;
-                            chew_halo = true;
                             chew_count++;
                             turning = false;
-                            eat_effect_alpha = 0.5f;
                         }
                     }
-                    if (mousePosition.y > size_y_use/3 && mousePosition.y < size_y_use/3*2)
-                    {
+                    if (mousePosition.y > size_y_use/3 && mousePosition.y < size_y_use/3*2){
                         eat_count = 1;
-                        if (turning == true)
-                        {
-                            eat_count = 3;
-                        }
+                        if (turning == true)eat_count = 3;
                     }
-                    if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f)
-                    {
+                    if (mousePosition.y > size_y_use/3*2 && mousePosition.y < size_y_use+5.0f){
                         eat_count = 2;
-                        if (turning == false)
-                        {
+                        if (turning == false){
                             call_mogu = 0;
                             turning = true;
                         }
-
                     }
                 }
 
@@ -286,7 +235,7 @@ public class Slide : MonoBehaviour
                 {
                     case 0:
                         if (turning == true) call_mogu = 0;
-                        if (eating_yet == true)image_eat.sprite = eat_2;
+                        if (eating_yet == true)image_eat.sprite = eat_1;
                         else
                         image_eat.sprite = eat_1;
                         break;
@@ -328,8 +277,6 @@ public class Slide : MonoBehaviour
             if (eat_end == true)
             {
                 image_eat.sprite = eat_1;
-                if (eat_effect_alpha > 0.0f) eat_effect_alpha -= 0.03f;
-                if (eat_effect_alpha < 0.0f) eat_effect_alpha = 0.0f;
                 text_eat_end.transform.localPosition = text_eat_end_pos;
                 if (text_eat_end_look == false)
                 {
@@ -345,7 +292,7 @@ public class Slide : MonoBehaviour
                     text_eat_end_move += 0.10f;
                     text_eat_end_pos.y = -4 + Mathf.Sin(-text_eat_end_move) / 4;
                     end_time++;
-                    var color = white_image.color;
+                    
                     color.b = 0.0f;
                     color.r = 0.0f;
                     color.g = 0.0f;
@@ -415,7 +362,7 @@ public class Slide : MonoBehaviour
     public void SlideStart()
     {
         start_anime = true;
-        transform.localPosition = pos;
         text_slide.text = "し縦てに食スべラてイねド";
+        this.GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
 }

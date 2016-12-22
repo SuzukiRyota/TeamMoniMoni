@@ -8,7 +8,6 @@ public class enemy_move : MonoBehaviour
 
     [SerializeField]
     Image white_image;
-
     [SerializeField]
     private GameObject walker;
     walk_eat walker_move;
@@ -47,6 +46,7 @@ public class enemy_move : MonoBehaviour
         HP_text = enemy_HP_text.GetComponent<Text>();
         HP_text_slot = enemy_HP_text_slot.GetComponent<Text>();
         size = 1.0f;
+        transform.localScale = new Vector3(1, 1, 1);
         time = 0;
         warp_time = 0;
         touch_count = 0;
@@ -70,18 +70,18 @@ public class enemy_move : MonoBehaviour
             var color = white_image.color;
             color.a = 1.0f - start_time / 100;
             white_image.color = color;
-
         }
+        if (start_time == 100) {
+            HP_text.text = "3";
+            HP_text_slot.text = "あと    回敵をタップしてね";
+                }
         if (start_time >= 100)
         {
-            transform.localScale = new Vector3(size, size, 1);
-
             time++;
             switch (touch_count)
             {
                 case 0:
                     transform.localPosition = enemy_pos;
-                    HP_text.text = "3";
                     if (time < 150&&speed_regulation < 3.0f) speed_regulation += 0.04f;
                     if (time >= 150&&speed_regulation >= 1.0f)speed_regulation -= 0.04f;
                     speed += 0.05f * speed_regulation;
@@ -89,7 +89,6 @@ public class enemy_move : MonoBehaviour
                     break;
                 case 1:
                     transform.localPosition = enemy_pos;
-                    HP_text.text = "2";
                     if (time < 150 && speed_regulation < 5.0f) speed_regulation += 0.04f;
                     if (time >= 150&&speed_regulation >= 1.0f)speed_regulation -= 0.04f;                    
                     speed += 0.03f * speed_regulation;
@@ -97,7 +96,6 @@ public class enemy_move : MonoBehaviour
                     break;
                 case 2:
                     transform.localPosition = enemy_pos;
-                    HP_text.text = "1";
                     if (time < 200)warp_time += 6;
                     if (time >= 200&&time<500)warp_time++;
                     if (time >= 500 && time % 2 == 0) warp_time++;
@@ -109,8 +107,6 @@ public class enemy_move : MonoBehaviour
                     }
                     break;
                 case 3:
-                    HP_text.text = " ";
-                    HP_text_slot.text = " ";
                     if (time < 100)
                     {
                         transform.localPosition = enemy_end_pos - enemy_end_pos / 100 * time;
@@ -120,6 +116,7 @@ public class enemy_move : MonoBehaviour
                 case 4:
                     if (time <= 202)
                     {
+                        transform.localScale = new Vector3(size, size, 1);
                         transform.localPosition = new Vector3(
                             0 + animation_eat_end_pos.x / 202 * time,
                             0 + animation_eat_end_pos.y / 202 * time,
@@ -131,7 +128,11 @@ public class enemy_move : MonoBehaviour
             }
             if (Input.GetMouseButtonDown(1))
             {
-                touch_count = 3;
+                if (touch_count < 3)
+                {
+                    time = 0;
+                    touch_count = 3;
+                }
             }
             if (Input.GetMouseButtonDown(0))
             {
@@ -148,16 +149,20 @@ public class enemy_move : MonoBehaviour
                                 touch_count++;
                                 time = 0;
                                 speed_regulation = 5;
+                                HP_text.text = "2";
                                 break;
                             case 1:
                                 touch_count++;
                                 time = 0;
+                                HP_text.text = "1";
                                 break;
                             case 2:
                                 enemy_end_pos = transform.localPosition;
                                 enemy_eat = true;
                                 touch_count++;
                                 time = 0;
+                                HP_text.text = " ";
+                                HP_text_slot.text = " ";
                                 break;
                         }
                        
