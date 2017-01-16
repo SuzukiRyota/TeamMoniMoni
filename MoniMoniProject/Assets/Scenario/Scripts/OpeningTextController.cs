@@ -142,7 +142,7 @@ public class OpeningTextController : MonoBehaviour
     {
         if (fademode == FadeMode.IN)
         {
-            textalpha += 0.008f;
+            textalpha += 0.009f;
             if (Input.GetMouseButtonUp(0))
             {
                 textalpha = 1.0f;
@@ -184,9 +184,16 @@ public class OpeningTextController : MonoBehaviour
         text.color = color;
         textalpha = Mathf.Clamp(textalpha, -1.0f, 1.0f);
 
+        // スキップする処理
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            is_talknow = false;
+        }
         if (is_talknow == false)
         {
             audiosource.Stop();
         }
+
+
     }
 }

@@ -21,7 +21,11 @@ public class EventLoader : MonoBehaviour
 
     void Awake()
     {
+        eventRegister();
+    }
 
+    public void eventRegister()
+    {
         for (int y = 0; y < mapcontroller.chip_num_y; y++)
         {
             for (int x = 0; x < mapcontroller.chip_num_x; x++)

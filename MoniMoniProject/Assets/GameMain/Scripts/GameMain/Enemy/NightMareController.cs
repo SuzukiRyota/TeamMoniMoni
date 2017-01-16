@@ -8,24 +8,28 @@ public class NightMareController : MonoBehaviour
 
     public bool is_move;
     public float speed;
-
-    public int movecount;
-
+    int movecount;
     public Vector2 prev_cell;
-    // Use this for initialization
+
+    public bool can_capture = false;
+    public int can_capture_count;
+
+
     void Start()
     {
         is_move = false;
         movecount = 0;
+        can_capture_count = 500;
         prev_cell = retCell();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (is_move == false) return;
 
-     
-
+        movecount++;
+        if (movecount > can_capture_count)
+            can_capture = true;
     }
 
     public Vector2 retCell()

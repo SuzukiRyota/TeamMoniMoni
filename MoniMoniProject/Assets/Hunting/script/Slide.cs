@@ -301,7 +301,7 @@ public class Slide : MonoBehaviour
                         color.a = 0.0f + (end_time - 100.0f) / 100;
                         white_image.color = color;
                     }
-                    if(text_eat_end_move>=20.0f)SceneManager.LoadScene("Ending");
+                    if(text_eat_end_move>=20.0f)SceneManager.LoadScene("GameMain");
                 }
             }
             if (chew_count == chew_number)

@@ -65,6 +65,11 @@ public class EnemyAI : MonoBehaviour
 
     void Start()
     {
+        aiSetup();
+    }
+
+    public void aiSetup()
+    {
         // プレハブからヒエラルキーのオブジェクトがもらえなかったので仕方なく名前検索
         mapchip = GameObject.Find("MapManager").GetComponent<MapChipController>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
@@ -450,6 +455,7 @@ public class EnemyAI : MonoBehaviour
     /// </summary>
     void rootRandomDecide()
     {
+        if (rootmax <= 0) return;
         while (true)
         {
             int rand_num = Random.Range(0, rootmax);

@@ -72,7 +72,7 @@ public class EventTalkManager : MonoBehaviour
     }
 
     [SerializeField]
-    GameObject talktextmanager;
+    GameObject talktext;
     // 文字の基準位置
     Vector2 talkstartpos;
     // 文字の今の位置
@@ -82,9 +82,7 @@ public class EventTalkManager : MonoBehaviour
     int font_defaultsize;
     [SerializeField]
     int font_bigsize;
-
     int fontsize;
-
     Color fontcolor;
 
     public bool is_talknow;
@@ -182,7 +180,7 @@ public class EventTalkManager : MonoBehaviour
     /// 渡されたテキストを分解して表示する文字列に保存する関数
     /// </summary>
     /// <param name="loadtext_">読み込んだ文字列</param>
-    void textDataCheck(string loadtext_)
+    public void textDataCheck(string loadtext_)
     {
         char[] chara_array = loadtext_.ToCharArray();
 
@@ -367,7 +365,7 @@ public class EventTalkManager : MonoBehaviour
     /// <param name="loadtext_">テキストから読み込んだ文字列</param>
     /// <param name="currentcharapos_">読んでいる位置</param>
     /// <returns>コマンド(文字列)</returns>
-    string commandSearch(string loadtext_, int currentcharapos_)
+    public string commandSearch(string loadtext_, int currentcharapos_)
     {
         // char配列にテキスト入れる
         char[] c = loadtext_.ToCharArray();
@@ -393,7 +391,7 @@ public class EventTalkManager : MonoBehaviour
     /// </summary>
     /// <param name="command_"></param>
     /// <returns></returns>
-    string commandPickOutName(string command_)
+    public string commandPickOutName(string command_)
     {
         char[] c = command_.ToCharArray();
         char start = '\'';
@@ -421,7 +419,7 @@ public class EventTalkManager : MonoBehaviour
     /// <param name="drawchar_"></param>
     /// <param name="fontsize_"></param>
     /// <param name="fontcolor_"></param>
-    void talkCharInstance(char drawchar_, int fontsize_, Color fontcolor_)
+    public void talkCharInstance(char drawchar_, int fontsize_, Color fontcolor_)
     {
         var drawchar = Resources.Load<GameObject>("Prefabs/TalkChar");
         var text = drawchar.GetComponent<Text>();
@@ -438,7 +436,7 @@ public class EventTalkManager : MonoBehaviour
         {
             talkcurrentpos.x += fontsize_ + 6;
         }
-        drawchar = (GameObject)Instantiate(drawchar, talktextmanager.transform);
+        drawchar = (GameObject)Instantiate(drawchar, talktext.transform);
 
         drawchar.transform.position = talkcurrentpos;
         drawchar.transform.localScale = new Vector3(1, 1, 1);
@@ -447,26 +445,24 @@ public class EventTalkManager : MonoBehaviour
     /// <summary>
     /// 会話の文字をクリアする関数
     /// </summary>
-    void talkTextClear()
+    public void talkTextClear()
     {
-        if (talktextmanager.transform.childCount >= 0)
-            foreach (Transform child in talktextmanager.transform)
+        if (talktext.transform.childCount >= 0)
+            foreach (Transform child in talktext.transform)
             {
                 Destroy(child.gameObject);
             }
-
-        talkstartpos = talktextmanager.transform.position;
+        talkstartpos = talktext.transform.position;
         talkcurrentpos = talkstartpos;
         fontsize = font_defaultsize;
         fontcolor = Color.black;
-
     }
 
     /// <summary>
     /// 選択肢のコマンドの中身を調べて選択肢を表示させる関数
     /// </summary>
     /// <param name="rootcommand_"></param>
-    void rootButtonSetting(string rootcommand_)
+    public void rootButtonSetting(string rootcommand_)
     {
         int rootcount = 0;
 

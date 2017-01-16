@@ -76,30 +76,26 @@ public class StagingController : MonoBehaviour
 
     public bool fadeOutBlack()
     {
-        if (flushcount < 200)
+        stagingcanvas.SetActive(true);
+        var color = fadeblack.color;
+        color.a += 0.02f;
+        if (color.a <= 1)
         {
-            stagingcanvas.SetActive(true);
-            var color = fadeblack.color;
-            color.a += 0.01f;
             fadeblack.color = color;
-            flushcount++;
             return false;
         }
-        flushcount = 0;
         return true;
     }
 
     public bool fadeInBlack()
     {
-        if (flushcount < 200)
+        var color = fadeblack.color;
+        color.a -= 0.01f;
+        if (color.a >= 0)
         {
-            var color = fadeblack.color;
-            color.a -= 0.01f;
             fadeblack.color = color;
-            flushcount++;
             return false;
         }
-        flushcount = 0;
         stagingcanvas.SetActive(false);
         return true;
     }

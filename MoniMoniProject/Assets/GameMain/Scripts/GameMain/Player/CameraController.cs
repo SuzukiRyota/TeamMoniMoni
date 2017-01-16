@@ -8,12 +8,7 @@ public class CameraController : MonoBehaviour
 
     public float camera_follow_speed;
     public float camera_follow_z;
-
-    // Use this for initialization
-    void Start()
-    {
-    }
-
+    
     public bool is_frameview;
 
     public Vector3 test;

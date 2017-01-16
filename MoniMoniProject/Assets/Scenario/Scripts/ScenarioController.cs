@@ -24,15 +24,11 @@ public class ScenarioController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            openingcanvas.SetActive(false);
-            openingstep++;
-        }
+        
         if (openingstep == 0)
             if (openingcanvas.GetComponent<OpeningTextController>().is_talknow == false)
             {
-                if (staging.fadeOutBlack() || Input.GetKeyDown(KeyCode.Return))
+                if (staging.fadeOutBlack())
                 {
                     openingcanvas.SetActive(false);
                     talkcanvas.SetActive(true);

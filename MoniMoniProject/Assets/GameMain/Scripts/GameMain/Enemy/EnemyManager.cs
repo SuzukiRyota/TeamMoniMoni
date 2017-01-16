@@ -22,11 +22,29 @@ public class EnemyManager : MonoBehaviour
 
 
     public bool is_bosshit;
+    public bool is_enemy_hit;
 
     void Start()
     {
+        enemySetup();
+    }
+
+    public void enemySetup()
+    {
+
+        if (mapchip.select_map_name.IndexOf("House") != -1)
+        {
+            nightmare.gameObject.SetActive(false);
+            dreamersPop(0);
+        }
+        else
+        {
+            nightmare.gameObject.SetActive(true);
+            enemy_num = SceneInfoManager.instance.enemy_num;
+            dreamersPop(enemy_num);
+            nightmareAI.aiSetup();
+        }
         is_bosshit = false;
-        dreamersPop();
 
         for (int y = 0; y < mapchip.chip_num_y; y++)
         {
@@ -58,24 +76,31 @@ public class EnemyManager : MonoBehaviour
             nightmare.is_move = true;
             nightmare.prev_cell = nightmare.retCell();
         }
-
     }
 
     void Update()
     {
-
         if (nightmare.is_move == false)
             nightmareAI.state = EnemyAI.State.IDLE;
-        if (nightmare.is_move)
+        if (nightmare.can_capture)
             if (pointToCircle(player.transform.position, 0.3f, nightmare.transform.position))
             {
                 is_bosshit = true;
             }
+
+        if (mapchip.select_map_name.IndexOf("House") != -1) return;
+        for (int i = 0; i < enemy_num; i++)
+        {
+            if (pointToCircle(player.transform.position, 0.3f, enemys[i].transform.position))
+            {
+                is_enemy_hit = true;
+            }
+        }
     }
 
-    void dreamersPop()
+    void dreamersPop(int enemy_num_)
     {
-        for (int i = 0; i < enemy_num; i++)
+        for (int i = 0; i < enemy_num_; i++)
         {
             var enemy = Resources.Load<GameObject>("Prefabs/Enemy");
             var ai = enemy.GetComponent<EnemyAI>();

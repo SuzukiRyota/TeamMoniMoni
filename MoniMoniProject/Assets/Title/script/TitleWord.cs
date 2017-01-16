@@ -2,6 +2,11 @@
 using System.Collections;
 
 public class TitleWord : MonoBehaviour {
+    public Sprite school_1;
+
+
+
+
     [SerializeField]
     private int wait_time;
     Vector2 pos;

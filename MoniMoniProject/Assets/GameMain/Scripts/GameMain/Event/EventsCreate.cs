@@ -24,15 +24,40 @@ public class EventsCreate : MonoBehaviour
 
     [SerializeField]
     EventTalkManager talkmanager;
+    [SerializeField]
+    EventLoader eventloader;
+    [SerializeField]
+    EventRepository eventrepository;
 
     [SerializeField]
     StagingController staging;
 
     [SerializeField]
+    GameObject stagemoveeventcanvas;
+
+    [SerializeField]
     EnemyManager enemymanager;
 
+    public void stateSave()
+    {
+        SceneInfoManager.instance.player_pos = player.transform.position;
+        SceneInfoManager.instance.select_map_name = chipcontroller.select_map_name;
+        SceneInfoManager.instance.select_stage_name = chipcontroller.select_stage_name;
+        SceneInfoManager.instance.enemy_num = enemymanager.enemy_num;
+        if (SceneInfoManager.instance.enemy_num > 0)
+            SceneInfoManager.instance.enemy_num--;
+    }
+
+    public void returnHouse()
+    {
+        SceneInfoManager.instance.player_pos = player.transform.position;
+        SceneInfoManager.instance.select_map_name = "House1F";
+        SceneInfoManager.instance.select_stage_name = "Videl";
+        SceneInfoManager.instance.enemy_num = 0;
+    }
+
     int upcount = 0;
-    // イベントが正常に動くかどうかのお試し関数
+    // イベントが正常に動くかどうかのお試し関数２つ
     public int playerUpEvent()
     {
         player.transform.Translate(0, chipcontroller.chip_size, 0);
@@ -41,7 +66,6 @@ public class EventsCreate : MonoBehaviour
             return 1;
         return 2;
     }
-
     public int playerDirectionEvent()
     {
         if (playercontroller.player_direction == PlayerController.PlayerDirection.UP)
@@ -61,17 +85,8 @@ public class EventsCreate : MonoBehaviour
     // 実装できてないイベントに入れる
     public int emptyEvent()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("none");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return 2;
     }
-
     public int overrapEmptyEvent()
     {
         playercontroller.state = PlayerController.State.NORMAL;
@@ -79,12 +94,8 @@ public class EventsCreate : MonoBehaviour
     }
 
     float player_z = -0.5f;
-
     int zombiecount = 0;
     Vector2 player_start_pos;
-
-    bool is_setup = false;
-
     public int playerZombieHand2()
     {
         if (is_setup)
@@ -101,8 +112,89 @@ public class EventsCreate : MonoBehaviour
     }
 
 
+    bool is_setup = false;
 
+    /// <summary>
+    /// 会話だけの時に使用する関数
+    /// </summary>
+    /// <returns></returns>
+    int talkEvent(string talkname_)
+    {
+        if (is_setup == false)
+        {
+            talkmanager.startTalk(talkname_);
+            is_setup = true;
+        }
+        if (talkmanager.is_talknow)
+            return 0;
+        is_setup = false;
+        return 1;
+    }
+
+    /// <summary>
+    /// 会話だけの時かつ、次のイベントに進む関数
+    /// </summary>
+    /// <param name="talkname_"></param>
+    /// <returns></returns>
+    int talkNextEvent(string talkname_)
+    {
+        if (is_setup == false)
+        {
+            talkmanager.startTalk(talkname_);
+            is_setup = true;
+        }
+        if (talkmanager.is_talknow)
+            return 0;
+        is_setup = false;
+        return 2;
+    }
+
+
+    /// イベントの作り方
+    /// 各関数ごとにintの返り値がある
+    /// return 0    イベント続行中
+    ///        1    イベントを終了させるかつ、呼び出されるたびに同じイベントを繰り返す
+    ///        2    イベントを終了させるかつ、イベントの段階を進める
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  学校イベント                                                                                                                      //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool is_flush = false;
     public int schoolEvent01()
+    {
+        if (is_flush == false)
+        {
+            if (is_setup == false)
+            {
+                stagemoveeventcanvas.SetActive(true);
+                talkmanager.startTalk("school_scenario");
+                is_setup = true;
+            }
+            playercontroller.state = PlayerController.State.TALK;
+        }
+        if (talkmanager.is_talknow)
+            return 0;
+        if (is_flush == false)
+        {
+            if (staging.flushStart())
+            {
+                is_flush = true;
+                is_setup = false;
+                stagemoveeventcanvas.SetActive(false);
+            }
+            return 0;
+        }
+        else
+        {
+            if (staging.flushEnd())
+            {
+                return 2;
+            }
+            return 0;
+        }
+    }
+
+    public int schoolEvent01_2()
     {
         if (is_setup == false)
         {
@@ -117,7 +209,7 @@ public class EventsCreate : MonoBehaviour
         return 2;
     }
 
-    public int schoolEvent02()
+    public int schoolEvent02()//---------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -129,20 +221,10 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
-    public int schoolEvent03()
+    public int schoolEvent03()//------------------------------------------------------------------------------------------
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_03");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_03");
     }
-
     public int schoolEvent04()
     {
         if (is_setup == false)
@@ -171,38 +253,19 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
     public int schoolEvent05()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_05");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 2;
+        return talkNextEvent("school_05");
     }
-
     public int schoolEvent05_3()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_05-3");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_05-3");
     }
-
-    public int schoolEvent06()
+    public int schoolEvent06()//---------------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
-            talkmanager.startTalk("school_06");
+            talkmanager.startTalk("school_06-1");
             is_setup = true;
         }
         if (talkmanager.is_talknow)
@@ -210,7 +273,7 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 2;
     }
-    public int schoolEvent06_2()
+    public int schoolEvent06_2()//---------------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -222,18 +285,9 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
     public int schoolEvent07()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_07");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 2;
+        return talkNextEvent("school_07");
     }
     public int schoolEvent07_2()
     {
@@ -247,8 +301,7 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
-    public int schoolEvent08()
+    public int schoolEvent08()//--------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -262,18 +315,9 @@ public class EventsCreate : MonoBehaviour
     }
     public int schoolEvent08_2()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_08-2");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_08-2");
     }
-
-    public int schoolEvent09()
+    public int schoolEvent09()//------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -297,8 +341,7 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
-    public int schoolEvent10()
+    public int schoolEvent10()//-----------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -324,92 +367,33 @@ public class EventsCreate : MonoBehaviour
     }
     public int schoolEvent11_2()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_11-2");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 2;
+        return talkNextEvent("school_11-2");
     }
     public int schoolEvent11_3()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_11-3");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_11-3");
     }
-
     public int schoolEvent12()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_12");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_12");
     }
     public int schoolEvent13()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_13");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_13");
     }
-
     public int schoolEvent14()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_14");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 2;
+        return talkNextEvent("school_14");
     }
     public int schoolEvent14_2()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_14-2");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 2;
+        return talkNextEvent("school_14-2");
     }
     public int schoolEvent14_3()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_14-3");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_14-3");
     }
-
-    public int schoolEvent15()
+    public int schoolEvent15()//-------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -421,7 +405,7 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-    public int schoolEvent16()
+    public int schoolEvent16()//----------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -433,59 +417,23 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
     public int schoolEvent17()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_17");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_17");
     }
     public int schoolEvent18()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_18");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
-    }
-
+        return talkEvent("school_18");
+    }//-------------------------------------------------------------------------------------------
     public int schoolEvent19()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_19");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_19");
     }
-
     public int schoolEvent20()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_20");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 2;
+        return talkNextEvent("school_20");
     }
-
-    public int schoolEvent20_2()
+    public int schoolEvent20_2()//------------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -497,20 +445,11 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
     public int schoolEvent21()
     {
-        if (is_setup == false)
-        {
-            talkmanager.startTalk("school_21");
-            is_setup = true;
-        }
-        if (talkmanager.is_talknow)
-            return 0;
-        is_setup = false;
-        return 1;
+        return talkEvent("school_21");
     }
-    public int schoolEvent22()
+    public int schoolEvent22()//----------------------------------------------------------------------------------------------
     {
         if (is_setup == false)
         {
@@ -522,8 +461,6 @@ public class EventsCreate : MonoBehaviour
         is_setup = false;
         return 1;
     }
-
-
     bool is_enemypop = false;
     public int schoolBossEvent()
     {
@@ -553,5 +490,437 @@ public class EventsCreate : MonoBehaviour
             }
             return 0;
         }
+    }
+
+
+    /// イベントの作り方
+    /// 各関数ごとにintの返り値がある
+    /// return 0    イベント続行中
+    ///        1    イベントを終了させるかつ、呼び出されるたびに同じイベントを繰り返す
+    ///        2    イベントを終了させるかつ、イベントの段階を進める
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  ヴィーデルの館イベント                                                                                                             //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //int floor_layer = (int)LayerController.Layer.FLOOR;
+    int wall_layer = (int)LayerController.Layer.WALL;
+    int door_layer = (int)LayerController.Layer.DOOR;
+    int object_layer = (int)LayerController.Layer.OBJECT;
+    int event_layer = (int)LayerController.Layer.EVENT;
+
+    /// <summary>
+    /// 引数のマスが壁、ドア、ものがない状態かどうかを返す関数
+    /// </summary>
+    bool isFloor(int x, int y)
+    {
+        if (chipcontroller.blockcomponents[wall_layer][y][x].number == -1 &&
+                        chipcontroller.blockcomponents[door_layer][y][x].number == -1 &&
+                        chipcontroller.blockcomponents[object_layer][y][x].number == -1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// プレイヤーを引数で渡したイベントのマスに移動させる関数
+    /// 移動させるときに、周囲４マスを調べて移動イベントの上や、壁ドア物がないところに移動させる
+    /// </summary>
+    bool roomMoveToPlayer(int gotoevent_)
+    {
+        for (int y = 0; y < chipcontroller.chip_num_y; y++)
+        {
+            for (int x = 0; x < chipcontroller.chip_num_x; x++)
+            {
+                if (chipcontroller.blockcomponents[event_layer][y][x].number == gotoevent_)
+                {
+                    if (x + 1 < chipcontroller.chip_num_x - 1 &&
+                        chipcontroller.blockcomponents[event_layer][y][x + 1].number != gotoevent_ &&
+                        isFloor(x + 1, y))
+                    {
+                        chipcontroller.playerSelectCellPop(x + 1, y);
+                        return true;
+                    }
+                    if (x - 1 > 0 &&
+                        chipcontroller.blockcomponents[event_layer][y][x - 1].number != gotoevent_ &&
+                        isFloor(x - 1, y))
+                    {
+                        chipcontroller.playerSelectCellPop(x - 1, y);
+                        return true;
+                    }
+                    if (y + 1 < chipcontroller.chip_num_y - 1 &&
+                        chipcontroller.blockcomponents[event_layer][y + 1][x].number != gotoevent_ &&
+                        isFloor(x, y + 1))
+                    {
+                        chipcontroller.playerSelectCellPop(x, y + 1);
+                        return true;
+                    }
+                    if (y - 1 > 0 &&
+                        chipcontroller.blockcomponents[event_layer][y - 1][x].number != gotoevent_ &&
+                        isFloor(x, y - 1))
+                    {
+                        chipcontroller.playerSelectCellPop(x, y - 1);
+                        return true;
+                    }
+                }
+            }
+
+        }
+        return false;
+    }
+
+    public int houseEvent02()//-------------------------------------------------------------------------------
+    {
+        return talkEvent("home_2");
+    }
+
+    bool is_roommove = false;
+
+    // 入る場合は自分の数字
+    // 出る場合は出る先の数字より１少ない数字
+    int moveToRoom(string room_name_, int eventnum_, string loadTexture_ = "Videl")
+    {
+        if (is_roommove == false)
+            if (staging.fadeOutBlack())
+            {
+                chipcontroller.mapChange(room_name_, loadTexture_);
+                eventloader.eventRegister();
+                roomMoveToPlayer(eventnum_);
+                is_roommove = true;
+                return 1;
+            }
+        return 0;
+    }
+
+    void Update()
+    {
+        if (is_roommove)
+            if (staging.fadeInBlack())
+            {
+                is_roommove = false;
+            }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            eventrepository.houseEndEventSetup();
+            eventloader.eventRegister();
+        }
+    }
+
+    public int houseEvent03()
+    {
+        return moveToRoom("House1FLeft", 3);
+    }
+    public int houseEvent04()
+    {
+        return moveToRoom("House1F", 2);
+    }
+    public int houseEvent05()
+    {
+        return moveToRoom("House1FRight", 5);
+    }
+    public int houseEvent06()
+    {
+        return moveToRoom("House1F", 4);
+    }
+    public int houseEvent07()
+    {
+        return moveToRoom("House1FCenter", 7);
+    }
+    public int houseEvent08()
+    {
+        return moveToRoom("House1F", 6);
+    }
+    public int houseEvent09()
+    {
+        return moveToRoom("House2F", 10);
+    }
+    public int houseEvent10()
+    {
+        return moveToRoom("House2F", 11);
+    }
+    public int houseEvent11()
+    {
+        return moveToRoom("House1F", 8);
+    }
+    public int houseEvent12()
+    {
+        return moveToRoom("House1F", 9);
+    }
+
+    public int houseEvent13()
+    {
+        return talkEvent("home_13");
+    }//-------------------------------------------------------------------------------------
+    public int houseEvent14()
+    {
+        return talkEvent("home_14");
+    }//-------------------------------------------------------------------------------------
+    public int houseEvent15()
+    {
+        return talkEvent("home_15");
+    }//-------------------------------------------------------------------------------------
+
+    public int houseEvent16()
+    {
+        return moveToRoom("House2FLeftBook", 16);
+    }
+    public int houseEvent17()
+    {
+        return moveToRoom("House2F", 15);
+    }
+    public int houseEvent18()
+    {
+        return moveToRoom("House2FRightBook", 18);
+    }
+    public int houseEvent19()
+    {
+        return moveToRoom("House2F", 17);
+    }
+
+    //-------------------------------------------------------------------------------------
+    public int houseEvent20()//-------------------------------------------------------------------------------------
+    {
+        return talkEvent("home_20");
+    }
+
+    public int houseEvent21()
+    {
+        if (is_setup == false)
+        {
+            talkmanager.startTalk("home_21");
+            is_setup = true;
+        }
+        if (talkmanager.is_talknow)
+            return 0;
+        if (talkmanager.selectbuttonnum == 1)
+        {
+            if (is_roommove == false)
+                if (staging.fadeOutBlack())
+                {
+                    eventrepository.schoolEventSetup();
+                    chipcontroller.mapChange("school1", "School");
+                    eventloader.eventRegister();
+                    chipcontroller.playerPop();
+                    enemymanager.enemySetup();
+                    is_setup = false;
+                    is_roommove = true;
+                    return 1;
+                }
+            return 0;
+        }
+        is_setup = false;
+        return 1;
+    }
+    public int houseEvent22()
+    {
+        return talkEvent("home_22");
+    }
+    public int houseEvent22_2()
+    {
+        return talkEvent("home_22-2");
+    }
+    public int houseEvent23()
+    {
+        return talkEvent("home_23");
+    }
+    public int houseEvent24()
+    {
+        return talkEvent("home_24");
+    }
+    public int houseEvent25()
+    {
+        return talkEvent("home_25");
+    }
+    public int houseEvent25_2()
+    {
+        return talkEvent("home_25-2");
+    }
+    public int houseEvent26()
+    {
+        return talkEvent("home_26");
+    }
+    public int houseEvent26_2()
+    {
+        return talkEvent("home_26-2");
+    }
+    public int houseEvent27()
+    {
+        return talkEvent("home_27");
+    }
+    public int houseEvent27_2()
+    {
+        return talkEvent("home_27-2");
+    }
+    public int houseEvent28()
+    {
+        return talkEvent("home_28");
+    }
+    public int houseEvent28_2()
+    {
+        return talkEvent("home_28-2");
+    }
+    public int houseEvent29()
+    {
+        return talkEvent("home_29");
+    }
+    public int houseEvent29_2()
+    {
+        return talkEvent("home_29-2");
+    }
+    public int houseEvent30()
+    {
+        return talkEvent("home_30");
+    }
+    public int houseEvent31()
+    {
+        return talkEvent("home_31");
+    }
+    public int houseEvent31_2()
+    {
+        return talkEvent("home_31-2");
+    }
+    public int houseEvent32()
+    {
+        return talkEvent("home_32");
+    }
+    public int houseEvent32_2()
+    {
+        return talkEvent("home_32-2");
+    }
+    public int houseEvent33()
+    {
+        return talkEvent("home_33");
+    }
+    public int houseEvent33_2()
+    {
+        return talkEvent("home_33-2");
+    }
+    public int houseEvent34()
+    {
+        return talkEvent("home_34");
+    }
+    public int houseEvent34_2()
+    {
+        return talkEvent("home_34-2");
+    }
+    public int houseEvent35()
+    {
+        return talkEvent("home_35");
+    }
+    public int houseEvent35_2()
+    {
+        return talkEvent("home_35-2");
+    }
+    public int houseEvent36()
+    {
+        return talkEvent("home_36");
+    }
+    public int houseEvent36_2()
+    {
+        return talkEvent("home_36-2");
+    }
+    public int houseEvent37()
+    {
+        return talkEvent("home_37");
+    }
+    public int houseEvent37_2()
+    {
+        return talkEvent("home_37-2");
+    }
+    public int houseEvent38()
+    {
+        return talkEvent("home_38");
+    }
+    public int houseEvent38_2()
+    {
+        return talkEvent("home_38-2");
+    }
+    public int houseEvent39()
+    {
+        return talkEvent("home_39");
+    }
+    public int houseEvent39_2()
+    {
+        return talkEvent("home_39-2");
+    }
+    public int houseEvent40()
+    {
+        return talkEvent("home_40");
+    }
+    public int houseEvent41()
+    {
+        return talkEvent("home_41");
+    }
+    public int houseEvent41_2()
+    {
+        return talkEvent("home_41-2");
+    }
+    public int houseEvent42()
+    {
+        return talkEvent("home_42");
+    }
+    public int houseEvent42_2()
+    {
+        return talkEvent("home_42-2");
+    }
+    public int houseEvent43()
+    {
+        return talkEvent("home_43");
+    }
+    public int houseEvent43_2()
+    {
+        return talkEvent("home_43-2");
+    }
+    public int houseEvent44()
+    {
+        return talkEvent("home_44");
+    }
+    public int houseEvent44_2()
+    {
+        return talkEvent("home_44-2");
+    }
+    public int houseEvent45()
+    {
+        return talkEvent("home_45");
+    }
+    public int houseEvent45_2()
+    {
+        return talkEvent("home_45-2");
+    }
+    public int houseEvent46()
+    {
+        return talkEvent("home_46");
+    }
+    public int houseEvent46_2()
+    {
+        return talkEvent("home_46-2");
+    }
+    public int houseEvent47()
+    {
+        return talkEvent("home_47");
+    }
+    public int houseEvent47_2()
+    {
+        return talkEvent("home_47-2");
+    }
+    public int houseEvent48()
+    {
+        return talkEvent("home_48");
+    }
+    public int houseEvent48_2()
+    {
+        return talkEvent("home_48-2");
+    }
+
+
+    public int houseEvent49()
+    {
+        int rand = Random.Range(1, 6);
+        return talkEvent("home_49-" + rand.ToString());
+    }
+    public int houseEvent49_2()
+    {
+        int rand = Random.Range(6, 11);
+        return talkEvent("home_49-" + rand.ToString());
     }
 }

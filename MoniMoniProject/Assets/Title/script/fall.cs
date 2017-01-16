@@ -4,7 +4,6 @@ using System.Collections;
 public class fall : MonoBehaviour {
     [SerializeField]
     private float fall_time;
-    float fall_max;
     float fall_y;
     Vector3 pos;
     private AudioSource Title_BGM_Name;
@@ -15,7 +14,6 @@ public class fall : MonoBehaviour {
         Title_BGM_Name = GetComponent<AudioSource>();
         fall_y = 4.8f;
         pos = transform.localPosition;
-        fall_max = fall_time;
     }
 
     // Update is called once per frame
