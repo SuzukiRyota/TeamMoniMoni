@@ -8,7 +8,6 @@ public class StagingController : MonoBehaviour
     GameObject stagingcanvas;
     [SerializeField]
     Image fadeblack;
-
     [SerializeField]
     Image fadewhite;
 
@@ -99,5 +98,17 @@ public class StagingController : MonoBehaviour
         stagingcanvas.SetActive(false);
         return true;
     }
+
+    public void blackOutStart()
+    {
+        fadeblack.color = new Color(0, 0, 0, 255);
+        stagingcanvas.SetActive(true);
+    }
+    public void blackOutEnd()
+    {
+        fadeblack.color = new Color(0, 0, 0, 0);
+        stagingcanvas.SetActive(false);
+    }
+
 
 }

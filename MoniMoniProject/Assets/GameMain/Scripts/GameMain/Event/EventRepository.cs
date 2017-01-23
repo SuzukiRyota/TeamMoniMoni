@@ -153,8 +153,7 @@ public class EventRepository : MonoBehaviour
     {
         eventAllClear();
         eventAdd(0, new List<EventFunc> { events.schoolEvent01, events.schoolEvent01_2 }, EventTriggerType.OVERLAP);
-
-        //eventAdd(1, new List<EventFunc> { events.playerZombieHand1, events.playerZombieHand2 }, EventTriggerType.OVERLAP);
+        
         eventAdd(1, new List<EventFunc> { events.schoolEvent02 }, EventTriggerType.CHECK);
 
         eventAdd(2, new List<EventFunc> { events.schoolEvent03 }, EventTriggerType.CHECK);
@@ -164,7 +163,7 @@ public class EventRepository : MonoBehaviour
         eventAdd(6, new List<EventFunc> { events.schoolEvent07, events.schoolEvent07_2 }, EventTriggerType.CHECK);
         eventAdd(7, new List<EventFunc> { events.schoolEvent08, events.schoolEvent08_2 }, EventTriggerType.CHECK);
         eventAdd(8, new List<EventFunc> { events.schoolEvent09, events.schoolEvent09_2 }, EventTriggerType.CHECK);
-        eventAdd(9, new List<EventFunc> { events.schoolEvent10 }, EventTriggerType.CHECK);
+
         eventAdd(10, new List<EventFunc> { events.schoolEvent11, events.schoolEvent11_2, events.schoolEvent11_3 }, EventTriggerType.CHECK);
         eventAdd(11, new List<EventFunc> { events.schoolEvent12 }, EventTriggerType.CHECK);
         eventAdd(12, new List<EventFunc> { events.schoolEvent13 }, EventTriggerType.CHECK);

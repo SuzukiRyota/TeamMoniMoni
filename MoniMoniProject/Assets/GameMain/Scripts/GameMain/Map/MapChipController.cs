@@ -46,11 +46,17 @@ public class MapChipController : MonoBehaviour
         if (SceneInfoManager.instance.select_map_name != null)
             select_map_name = SceneInfoManager.instance.select_map_name;
         else
+        {
             select_map_name = "House1F";
+            SceneInfoManager.instance.select_map_name = select_map_name;
+        }
         if (SceneInfoManager.instance.select_stage_name != null)
             select_stage_name = SceneInfoManager.instance.select_stage_name;
         else
+        {
             select_stage_name = "Videl";
+            SceneInfoManager.instance.select_stage_name = select_stage_name;
+        }
         loadMap(select_stage_name, select_map_name);
 
         debugToEventRedColor();
@@ -59,19 +65,19 @@ public class MapChipController : MonoBehaviour
     public void debugToEventRedColor()
     {
 #if DEBUG
-        //for (int y = 0; y < chip_num_y; y++)
-        //{
-        //    for (int x = 0; x < chip_num_x; x++)
-        //    {
-        //        if (blockcomponents[eventlayer][y][x].number != -1)
-        //        {
-        //            for (int i = 0; i < (int)LayerController.Layer.LAYER_MAX; i++)
-        //            {
-        //                blocks[i][y][x].GetComponent<SpriteRenderer>().material.color = Color.red;
-        //            }
-        //        }
-        //    }
-        //}
+        for (int y = 0; y < chip_num_y; y++)
+        {
+            for (int x = 0; x < chip_num_x; x++)
+            {
+                if (blockcomponents[eventlayer][y][x].number != -1)
+                {
+                    for (int i = 0; i < (int)LayerController.Layer.LAYER_MAX; i++)
+                    {
+                        blocks[i][y][x].GetComponent<SpriteRenderer>().material.color = Color.red;
+                    }
+                }
+            }
+        }
 #endif
     }
 
@@ -169,10 +175,10 @@ public class MapChipController : MonoBehaviour
         }
     }
 
-    // プレイヤーでイベントが起こった時に選んでいるブロック
+    // プレイヤーのイベントが起こった時に選んでいるブロック
     public int eventselect_cell_x;
     public int eventselect_cell_y;
-    // プレイヤーでイベントが起こった時のセル
+    // プレイヤーのイベントが起こった時のセル
     public int eventplayer_cell_x;
     public int eventplayer_cell_y;
 
@@ -386,7 +392,7 @@ public class MapChipController : MonoBehaviour
             {
                 for (int x = 0; x < chip_num_x; x++)
                 {
-                    if (pointToCenterBox(blocks[i][y][x].transform.position, camerapos, camerasize))
+                    if (pointToCenterBoxRect(blocks[i][y][x].transform.position, camerapos, camerasize))
                     {
                         blocks[i][y][x].SetActive(true);
                     }
@@ -399,7 +405,8 @@ public class MapChipController : MonoBehaviour
         }
     }
 
-    bool pointToBottomLeftBox(Vector2 pointpos_, Vector2 boxpos_, Vector2 boxsize_)
+    // 点と矩形（左下）
+    public bool pointToBottomLeftRect(Vector2 pointpos_, Vector2 boxpos_, Vector2 boxsize_)
     {
         return (
             pointpos_.x > boxpos_.x &&
@@ -407,7 +414,8 @@ public class MapChipController : MonoBehaviour
             pointpos_.y > boxpos_.y &&
             pointpos_.y < boxpos_.y + boxsize_.y);
     }
-    bool pointToCenterBox(Vector2 pointpos_, Vector2 boxpos_, Vector2 boxsize_)
+    // 点と矩形（真ん中）
+    public bool pointToCenterBoxRect(Vector2 pointpos_, Vector2 boxpos_, Vector2 boxsize_)
     {
         return (
             pointpos_.x > boxpos_.x - boxsize_.x / 2 &&
@@ -537,7 +545,7 @@ public class MapChipController : MonoBehaviour
                         tempblock_x.Add(Instantiate(block));
                         tempblock_x[x].transform.parent = gameObject.transform;
 
-                        if (pointToCenterBox(tempblock_x[x].transform.position, camerapos, camerasize))
+                        if (pointToCenterBoxRect(tempblock_x[x].transform.position, camerapos, camerasize))
                         {
                             tempblock_x[x].SetActive(true);
                         }
@@ -589,6 +597,17 @@ public class MapChipController : MonoBehaviour
         blockcomponents.Clear();
     }
 
+    public bool isFloor(int x, int y)
+    {
+        if (blockcomponents[(int)LayerController.Layer.WALL][y][x].number == -1 &&
+                blockcomponents[(int)LayerController.Layer.DOOR][y][x].number == -1 &&
+                blockcomponents[(int)LayerController.Layer.OBJECT][y][x].number == -1)
+        {
+            return true;
+        }
+        return false;
+    }
+
 
     /// <summary>
     /// 文字列を空白区切りでintに変換する関数
@@ -630,9 +649,39 @@ public class MapChipController : MonoBehaviour
                 }
                 temp_value += c[i];
             }
-
         }
         return retvalue;
+    }
+
+    /// <summary>
+    /// 空白区切りをした場合の要素数を返す関数
+    /// </summary>
+    public int stringToSpaceBoundLength(string line_)
+    {
+        int length = 0;
+        char[] c = line_.ToCharArray();
+        bool is_blank = false;
+
+        for (int i = 0; i < line_.Length; i++)
+        {
+            if (is_blank)
+            {
+                if (c[i] != ' ')
+                {
+                    is_blank = false;
+                }
+            }
+            if (is_blank == false)
+            {
+                if (c[i] == ' ')
+                {
+                    is_blank = true;
+                    length++;
+                    continue;
+                }
+            }
+        }
+        return length;
     }
 }
 

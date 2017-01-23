@@ -92,8 +92,10 @@ public class EventTalkManager : MonoBehaviour
     {
         NORMAL,
         SELECT,
+        EVENT,
     }
     public TalkMode talkmode;
+    public int event_call_count;
 
     // テキストのパス
     string loadtextpath;
@@ -122,6 +124,7 @@ public class EventTalkManager : MonoBehaviour
             is_talknow = true;
             rootButtonSetup();
             current_read_line = 0;
+            event_call_count = 0;
 
             var eventtext = Resources.Load<TextAsset>("EventData/" + textname_);
             using (var sr = new StringReader(eventtext.text))
@@ -236,13 +239,11 @@ public class EventTalkManager : MonoBehaviour
 
             // 会話の種類 (普通の会話や選択肢など)
             if (command == "text")
-            {
                 talkmode = TalkMode.NORMAL;
-            }
             else if (command == "root")
-            {
                 talkmode = TalkMode.SELECT;
-            }
+            else if (command == "event")
+                talkmode = TalkMode.EVENT;
 
             if (talkmode == TalkMode.NORMAL)
             {
@@ -305,6 +306,7 @@ public class EventTalkManager : MonoBehaviour
                         else if (pickoutcommand == "end")
                             fontcolor = Color.black;
                     }
+                    continue;
                 }
 
                 if (chara_array[i] == '(')
@@ -335,9 +337,10 @@ public class EventTalkManager : MonoBehaviour
                 }
 
                 if (chara_array[i] == ' ' ||
+                    chara_array[i] == ' ' ||
+                    chara_array[i] == '\t' ||
                     chara_array[i] == '\r' ||
                     chara_array[i] == '\n') continue;
-
                 // 会話文に追加
                 talkCharInstance(chara_array[i], fontsize, fontcolor);
             }
@@ -354,6 +357,12 @@ public class EventTalkManager : MonoBehaviour
                     is_selectbuttonpush = false;
                     continue;
                 }
+            }
+            if (talkmode == TalkMode.EVENT)
+            {
+                current_read_line = i;
+                event_call_count++;
+                return;
             }
         }
 
@@ -535,7 +544,7 @@ public class EventTalkManager : MonoBehaviour
     AudioSource audiosource;
 
     [SerializeField]
-    GameObject talkmanager;
+    GameObject talkcanvas;
 
     void Start()
     {
@@ -543,9 +552,9 @@ public class EventTalkManager : MonoBehaviour
         sprites = Resources.LoadAll<Sprite>("Textures/Talk");
         audiosource = GetComponent<AudioSource>();
         //audiosource.clip = audioclip;
-        talkmanager.SetActive(true);
+        talkcanvas.SetActive(true);
         talkTextClear();
-        talkmanager.SetActive(false);
+        talkcanvas.SetActive(false);
     }
 
     void Update()

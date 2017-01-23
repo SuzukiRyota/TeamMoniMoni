@@ -20,7 +20,7 @@ public class EnemyManager : MonoBehaviour
     // エネミーの数
     public int enemy_num;
 
-
+    // 捕まえる画面に移行するためのbool
     public bool is_bosshit;
     public bool is_enemy_hit;
 
@@ -29,6 +29,9 @@ public class EnemyManager : MonoBehaviour
         enemySetup();
     }
 
+    /// <summary>
+    /// エネミーの準備
+    /// </summary>
     public void enemySetup()
     {
 
@@ -63,6 +66,10 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ナイトメアを動く状態にする関数
+    /// </summary>
+    /// <param name="selectnum_"></param>
     public void nightmareRePop(int selectnum_)
     {
         if (selectnum_ == 2)
@@ -75,6 +82,8 @@ public class EnemyManager : MonoBehaviour
             enemys.Clear();
             nightmare.is_move = true;
             nightmare.prev_cell = nightmare.retCell();
+            enemy_num = 0;
+            SceneInfoManager.instance.enemy_num = 0;
         }
     }
 
@@ -98,6 +107,10 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 敵を出現させる関数
+    /// </summary>
+    /// <param name="enemy_num_"></param>
     void dreamersPop(int enemy_num_)
     {
         for (int i = 0; i < enemy_num_; i++)
@@ -125,5 +138,13 @@ public class EnemyManager : MonoBehaviour
         float y = (pointpos.y - circlepos.y) * (pointpos.y - circlepos.y);
 
         return x + y <= radius * radius;
+    }
+
+    /// <summary>
+    /// エネミーにトラップにかかったことを教える関数
+    /// </summary>
+    public void enemyInTrap(int enemy_num_, int trap_active_time_)
+    {
+        enemys[enemy_num_].GetComponent<EnemyAI>().inTrap(trap_active_time_);
     }
 }

@@ -7,7 +7,6 @@ using System.Collections;
 /// </summary>
 public class Block : MonoBehaviour
 {
-
     private bool is_select;
     public bool IsSelect
     {
@@ -22,6 +21,5 @@ public class Block : MonoBehaviour
     SpriteRenderer spriterenderer;
 
     public int number;
-
     public int index;
 }
